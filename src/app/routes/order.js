@@ -32,22 +32,6 @@ router.post("/", [verifyToken, checkIfTheOwnerOrAdmin], async (req, res) => {
   }
 });
 
-//GET USER ORDER
-router.get("/:userId", [checkIfTheOwnerOrAdmin], async (req, res) => {
-  try {
-    const order = await Order.find({ userId: req.params.userId });
-    return res.status(200).json({
-      status: "success",
-      message: order,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      status: "failed",
-      message: err.message,
-    });
-  }
-});
-
 //GET ALL ORDERS
 router.get("/", async (req, res) => {
   try {
@@ -109,7 +93,7 @@ router.get("/income", [verifyToken, checkIfAdmin], async (req, res) => {
 
   try {
     const monthlyIncome = await Order.aggregate([
-      { $match: { createdAt: { $gte: previousMonth.getFullYear } } },
+      { $match: { createdAt: { $gte: previousMonth } } },
       {
         $project: {
           month: { $month: "$createdAt" },
@@ -123,10 +107,25 @@ router.get("/income", [verifyToken, checkIfAdmin], async (req, res) => {
         },
       },
     ]);
-
     return res.status(200).json({
       status: "success",
       monthlyIncome,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: "failed",
+      message: err.message,
+    });
+  }
+});
+
+//GET USER ORDER
+router.get("/:userId", [checkIfTheOwnerOrAdmin], async (req, res) => {
+  try {
+    const order = await Order.find({ userId: req.params.userId });
+    return res.status(200).json({
+      status: "success",
+      message: order,
     });
   } catch (err) {
     return res.status(500).json({

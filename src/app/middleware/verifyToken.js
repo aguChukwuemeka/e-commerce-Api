@@ -21,8 +21,7 @@ const verifyToken = (req, res, next) => {
           .status(403)
           .json({ status: "error", message: "Token is invalid" });
       req.user = user;
-      // console.log("Token verified :", user);
-      // console.log("Param:", req.params.id, typeof req.params.id);
+      // console.log("Token verified :", req.user);
       return next();
     });
   }
